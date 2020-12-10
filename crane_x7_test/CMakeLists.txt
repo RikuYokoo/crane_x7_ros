@@ -44,5 +44,7 @@ include_directories(include ${catkin_INCLUDE_DIRS} ${OpenCV_INCLDUE_DIRS})
 
 add_executable(team src/test.cpp)
 add_executable(tameshi src/first.cpp)
+add_executable(sample src/sample.cpp)
 target_link_libraries(team ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
 target_link_libraries(tameshi ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
+target_link_libraries(sample ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})

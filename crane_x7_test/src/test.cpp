@@ -56,10 +56,10 @@ void depth_estimater::rgbImageCallback(const sensor_msgs::ImageConstPtr& msg){
     
     //Scalar lower = cv::Scalar(0,0,0);
     //Scalar upper = cv::Scalar(255,255,255);    
-    Scalar lower = cv::Scalar( 0, 120,  120); //フィルタリングする色の範囲
-    Scalar upper = cv::Scalar( 80, 230, 255);
-    //Scalar lower = cv::Scalar( 0, 0, 255); //フィルタリングする色の範囲
-    //Scalar upper = cv::Scalar( 0, 120, 255);
+    //Scalar lower = cv::Scalar( 0, 120,  120); //フィルタリングする色の範囲
+    //Scalar upper = cv::Scalar( 80, 230, 255);
+    Scalar lower = cv::Scalar( 160, 50, 50); //フィルタリングする色の範囲
+    Scalar upper = cv::Scalar( 180, 255, 255);
 
 
 	// BGRからHSVへ変換
