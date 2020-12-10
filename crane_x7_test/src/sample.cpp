@@ -1,3 +1,4 @@
+/*ライセンスを追加*/
 #include <ros/ros.h>
 #include <sensor_msgs/Image.h>
 #include <cv_bridge/cv_bridge.h>
@@ -18,7 +19,7 @@ public:          //変数をpublicで宣言
 private:
     ros::NodeHandle nh;
     ros::Subscriber sub_rgb;
-    ros::Publisher pub_pose = nh.advertise<geometry_msgs::Pose2D>("bool",1);
+    ros::Publisher pub_pose = nh.advertise<geometry_msgs::Pose2D>("pose",1);//トピック名pose
     //ros::Publisher pub_pose = nh.advertise<geometry_msgs::Pose2D>("bool1",1);
     ros::Publisher pub2 = nh.advertise<geometry_msgs::Pose2D>("bool2",1);
 };
@@ -48,14 +49,14 @@ void depth_estimater::rgbImageCallback(const sensor_msgs::ImageConstPtr& msg){
 
   cvtColor(cv_ptr->image, hsv_image, CV_BGR2HSV, 3);//rgbからhsvに変換
 
-  Scalar sita = Scalar(0, 50, 50);
+  Scalar sita = Scalar(0, 50, 50);//hsvで表した赤~黄あたり
   Scalar ue = Scalar(30, 255, 255);
 
   cv::inRange(hsv_image, sita, ue, bin_image);//2値化
 
   cv::imshow("bin", bin_image);//2値化後の画像
   
-  cv_ptr->image.copyTo(output_image, bin_image);
+  cv_ptr->image.copyTo(output_image, bin_image);//マスク
 
   std::vector< std::vector< cv::Point > > contours;
 
@@ -80,7 +81,7 @@ void depth_estimater::rgbImageCallback(const sensor_msgs::ImageConstPtr& msg){
     x/=count;
     y/=count;
 
-    pose.x = x - 320;//cranx7にあわせた
+    pose.x = x - 320;//画像の中心を(0,0)とした
     pose.y = y - 240;
     pose.theta = 1;
     printf("x = %lf, y = %lf theta = %lf\n", pose.x, pose.y, pose.theta);
