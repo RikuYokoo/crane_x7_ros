@@ -26,6 +26,7 @@ private:
 
 depth_estimater::depth_estimater(){
   sub_rgb = nh.subscribe<sensor_msgs::Image>("/camera/color/image_raw", 1, &depth_estimater::rgbImageCallback, this);
+//  sub_rgb = nh.subscribe<sensor_msgs::Image>("/camera/image_raw", 1, &depth_estimater::rgbImageCallback, this);
 }
 
 depth_estimater::~depth_estimater(){
@@ -49,8 +50,10 @@ void depth_estimater::rgbImageCallback(const sensor_msgs::ImageConstPtr& msg){
 
   cvtColor(cv_ptr->image, hsv_image, CV_BGR2HSV, 3);//rgbからhsvに変換
 
-  Scalar sita = Scalar(0, 50, 50);//hsvで表した赤~黄あたり
-  Scalar ue = Scalar(30, 255, 255);
+  //Scalar sita = Scalar(5, 50, 50);//hsvで表した赤~黄あたり
+  //Scalar ue = Scalar(20, 255, 255);
+  Scalar sita = Scalar(30, 50, 50);//hsvで表した緑あたり
+  Scalar ue = Scalar(60, 255, 255);
 
   cv::inRange(hsv_image, sita, ue, bin_image);//2値化
 
@@ -81,8 +84,11 @@ void depth_estimater::rgbImageCallback(const sensor_msgs::ImageConstPtr& msg){
     x/=count;
     y/=count;
 
-    pose.x = x - 320;//画像の中心を(0,0)とした
-    pose.y = y - 240;
+    //画像の中心(0,0)とした
+    //pose.x = x - 320;//→が正
+    pose.x = 320 - x;//←が正
+    //pose.y = y - 240;//↓が正
+    pose.y = 240 - y;//↑が正
     pose.theta = 1;
     printf("x = %lf, y = %lf theta = %lf\n", pose.x, pose.y, pose.theta);
     circle(rgb_image, Point(x,y),100, Scalar(0,0,255),3,4);
@@ -106,7 +112,7 @@ void depth_estimater::rgbImageCallback(const sensor_msgs::ImageConstPtr& msg){
 
 int main(int argc, char **argv){
   sleep(2.0);
-  ros::init(argc, argv, "depth_estimater");
+  ros::init(argc, argv, "sample");
   depth_estimater depth_estimater;
   ros::spin();
   return 0;
