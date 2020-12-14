@@ -9,12 +9,14 @@ import rosnode
 import math
 from tf.transformations import quaternion_from_euler
 
+correct_pose_z = 0.3
+
 
 class See_and_pick_seal():
     def __init__(self):
         self.pub =()
         self.sub = rospy.Subscriber("pose", Pose2D, self.pickcallback)
-        rospy.init_node("crane_x7_pick_and_place_controller")
+        #rospy.init_node("crane_x7_pick_and_place_controller")
         robot = moveit_commander.RobotCommander()
         arm = moveit_commander.MoveGroupCommander("arm")
         arm.set_max_velocity_scaling_factor(0.1)
@@ -36,26 +38,30 @@ class See_and_pick_seal():
         print(arm_initial_pose)
         
     def pickcallback(self, pose):
+        print("pickcallback")
         mode = pose.theta
         pose_x = pose.y
         pose_y = pose.x
+        global correct_pose_x
+        global correct_pose_y
         correct_pose_x = pose_x
         correct_pose_y = pose_y
 
         if(pose_x < 0 and pose_y < 0):
-            correct_pose_x += 10
-            correct_pose_y += 10
+            correct_pose_x += 1
+            correct_pose_y += 1
         elif(pose_x < 0 and pose_y >= 0):
-            correct_pose_x += 10
-            correct_pose_y -= 10
+            correct_pose_x += 1
+            correct_pose_y -= 1
         elif(pose_x >= 0 and pose_y < 0):
-            correct_pose_x -= 10
-            correct_pose_y += 10
+            correct_pose_x -= 1
+            correct_pose_y += 1
         else:
-            correct_pose_x -= 10
-            correct_pose_y -= 10
+            correct_pose_x -= 1
+            correct_pose_y -= 1
 
-        arm_move(correct_pose_x, correct_pose_y, correct_pose_z)
+        See_and_pick_seal.arm_move(correct_pose_x, correct_pose_y, correct_pose_z)
+        #See_and_pick_seal.arm_move(correct_pose_x, correct_pose_y, correct_pose_z)
 
     def arm_move(x,y,z):
         target_pose = geometry_msgs.msg.Pose()
@@ -70,13 +76,17 @@ class See_and_pick_seal():
         arm.set_pose_target(target_pose)
         arm.go()
 
-    def pick_seal(self, pose_x, pose_y):
+
+    def see_seal(self):
+        #See_and_pick_seal.arm_move(correct_pose_x, correct_pose_y, correct_pose_z)
+        self.sub = rospy.Subscriber("pose", Pose2D, self.pickcallback)
 
 
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     rospy.init_node("pick_hanko")
     node = See_and_pick_seal()
+    node.see_seal()
     rospy.spin()
 
